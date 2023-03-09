@@ -60,7 +60,7 @@ public final class UserMealsUtil {
     }
 
     private static LocalDate getDate(UserMeal meal) {
-        return LocalDate.from(meal.getDateTime());
+        return meal.getDateTime().toLocalDate();
     }
 
     private static LocalTime getTime(UserMeal meal) {
