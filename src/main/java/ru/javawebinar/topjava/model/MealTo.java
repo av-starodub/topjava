@@ -2,20 +2,38 @@ package ru.javawebinar.topjava.model;
 
 import java.time.LocalDateTime;
 
-public class MealTo {
+public final class MealTo {
     private final LocalDateTime dateTime;
-
     private final String description;
-
     private final int calories;
-
     private final boolean excess;
+    private final int id;
 
-    public MealTo(LocalDateTime dateTime, String description, int calories, boolean excess) {
-        this.dateTime = dateTime;
-        this.description = description;
-        this.calories = calories;
+    public MealTo(Meal meal, boolean excess) {
+        this.dateTime = meal.getDateTime();
+        this.description = meal.getDescription();
+        this.calories = meal.getCalories();
+        this.id = meal.getId();
         this.excess = excess;
+    }
+    public LocalDateTime getDateTime() {
+        return dateTime;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public int getCalories() {
+        return calories;
+    }
+
+    public boolean isExcess() {
+        return excess;
+    }
+
+    public int getId() {
+        return id;
     }
 
     @Override
