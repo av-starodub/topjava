@@ -13,11 +13,11 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class MealMemoryStorage implements MealStorage {
     private final ConcurrentMap<Integer, Meal> storage;
-    private final AtomicInteger uniqueID;
+    private final AtomicInteger id;
 
     public MealMemoryStorage() {
         storage = new ConcurrentHashMap<>();
-        uniqueID = new AtomicInteger(0);
+        id = new AtomicInteger(0);
         MealsUtil.fillTestStorage(this);
     }
 
@@ -29,18 +29,22 @@ public class MealMemoryStorage implements MealStorage {
     @Override
     public Meal add(Meal meal) {
         Objects.requireNonNull(meal, "Meal must not be null");
-        meal.setId(uniqueID.incrementAndGet());
-        return storage.put(meal.getId(), meal);
+        int nextId = id.incrementAndGet();
+        meal.setId(nextId);
+        storage.put(nextId, meal);
+        return storage.get(nextId);
     }
 
     @Override
     public Meal update(Meal meal) {
-        return storage.put(meal.getId(), meal);
+        int id = meal.getId();
+        storage.put(id, meal);
+        return storage.get(id);
     }
 
     @Override
-    public Meal delete(int uniqueID) {
-        return storage.remove(uniqueID);
+    public Meal delete(int id) {
+        return storage.remove(id);
     }
 
     @Override

@@ -1,5 +1,8 @@
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ page import="java.time.format.DateTimeFormatter" %>
 <%@ page contentType="text/html;charset=UTF-8" %>
+<c:set var="contextPath" value="${pageContext.request.contextPath}"/>
+
 <html>
 <head>
     <title>Delete meal</title>
@@ -8,7 +11,7 @@
           integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B09zVXn8CA5QIVfZOJ3BCsw2P0p/We"
           crossorigin="anonymous">
 </head>
-<h3><a href="${pageContext.request.contextPath}">Home</a></h3>
+<h3><a href="${contextPath}">Home</a></h3>
 <hr>
 <body>
 <div class="container">
@@ -23,9 +26,9 @@
         </tr>
     </table>
     <hr>
-    <form align="center" action='${pageContext.request.contextPath}/meals/delete?id=${meal.id}' method="post">
+    <form align="center" action='${contextPath}/meals/delete?id=${meal.id}' method="post">
         <button type="submit" class="btn btn-danger">Delete</button>
-        <a href="${pageContext.request.contextPath}/meals">
+        <a href="${contextPath}/meals">
             <button class="btn btn-primary" type="button">Cancel</button>
         </a>
     </form>

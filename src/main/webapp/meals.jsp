@@ -1,6 +1,8 @@
 <%@ page import="java.time.format.DateTimeFormatter" %>
 <%@ page contentType="text/html;charset=UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<c:set var="contextPath" value="${pageContext.request.contextPath}"/>
+
 <html>
 <head>
     <title>Meals list</title>
@@ -10,11 +12,11 @@
           crossorigin="anonymous">
 </head>
 <body>
-<h3><a href="${pageContext.request.contextPath}">Home</a></h3>
+<h3><a href="${contextPath}">Home</a></h3>
 <hr>
 <div class="container">
     <h2 align="center">Meals</h2>
-    <h3 align="center"><a href="${pageContext.request.contextPath}/meals/new">
+    <h3 align="center"><a href="${contextPath}/meals/new">
         <button class="btn btn-primary" type="button">Add meal</button>
     </a></h3>
     <table align="center" cellpadding="10">
@@ -36,9 +38,9 @@
                 <td>${meal.description}</td>
                 <td>${meal.calories}</td>
                 <td><a class="btn btn-primary"
-                       href="${pageContext.request.contextPath}/meals/edit?id=${meal.id}">Edit</a></td>
+                       href="${contextPath}/meals/edit?id=${meal.id}">Edit</a></td>
                 <td><a class="btn btn-primary"
-                       href="${pageContext.request.contextPath}/meals/delete?id=${meal.id}">Delete</a></td>
+                       href="${contextPath}/meals/delete?id=${meal.id}">Delete</a></td>
             </tr>
         </c:forEach>
     </table>

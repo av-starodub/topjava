@@ -10,10 +10,10 @@ public final class MealTo {
     private final boolean excess;
 
     public MealTo(LocalDateTime dateTime, String description, int calories, int id, boolean excess) {
+        this.id = id;
         this.dateTime = dateTime;
         this.description = description;
         this.calories = calories;
-        this.id = id;
         this.excess = excess;
     }
 

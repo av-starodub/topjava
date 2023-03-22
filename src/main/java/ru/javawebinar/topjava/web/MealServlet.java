@@ -37,13 +37,18 @@ public class MealServlet extends HttpServlet {
                 break;
             }
             case "new": {
-                log.debug("redirect to new");
-                doShow(request, response, "/new.jsp");
+                log.debug("redirect to meal");
+                request.setAttribute("title", "Add meal");
+                request.setAttribute("action", "new");
+                request.setAttribute("meal", new Meal(null, null, 0));
+                doShow(request, response, "/meal.jsp");
                 break;
             }
             case "edit": {
-                log.debug("redirect to edit");
-                doShow(request, response, "/edit.jsp");
+                log.debug("redirect to meal");
+                request.setAttribute("title", "Edit meal");
+                request.setAttribute("action", "edit");
+                doShow(request, response, "/meal.jsp");
                 break;
             }
             case "delete": {
@@ -72,7 +77,10 @@ public class MealServlet extends HttpServlet {
                 break;
             }
             case "delete": {
-                storage.delete(getId(request));
+                Integer id = getId(request);
+                if (Objects.nonNull(id)) {
+                    storage.delete(id);
+                }
                 break;
             }
             default: {
@@ -83,12 +91,12 @@ public class MealServlet extends HttpServlet {
         response.sendRedirect(path + "/meals");
     }
 
-    private static int getId(HttpServletRequest request) {
+    private static Integer getId(HttpServletRequest request) {
         String id = request.getParameter("id");
         if (Objects.nonNull(id)) {
             return Integer.parseInt(request.getParameter("id"));
         }
-        return -1;
+        return null;
     }
 
     private String getAction(HttpServletRequest request) {
@@ -106,16 +114,16 @@ public class MealServlet extends HttpServlet {
         String description = request.getParameter("description");
         int calories = Integer.parseInt(request.getParameter("calories"));
         Meal meal = new Meal(dateTime, description, calories);
-        int id = getId(request);
-        if (id != -1) {
-            meal.setId(getId(request));
+        Integer id = getId(request);
+        if (Objects.nonNull(id)) {
+            meal.setId(id);
         }
         return meal;
     }
 
     private void doShow(HttpServletRequest request, HttpServletResponse response, String urlJsp) throws ServletException, IOException {
-        int id = getId(request);
-        if (id != -1) {
+        Integer id = getId(request);
+        if (Objects.nonNull(id)) {
             Meal meal = storage.get(id);
             if (Objects.isNull(meal)) {
                 response.sendError(HttpServletResponse.SC_NOT_FOUND);
