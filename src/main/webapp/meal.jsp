@@ -1,8 +1,9 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<jsp:useBean id="title" scope="request" type="java.lang.String"/>
-<jsp:useBean id="action" scope="request" type="java.lang.String"/>
+<jsp:useBean id="meal" scope="request" type="ru.javawebinar.topjava.model.Meal "/>
+<c:set var="title" value="${meal.id == null ? \"Add meal\" : \"Edit meal\"}"/>
 <c:set var="contextPath" value="${pageContext.request.contextPath}"/>
+<c:set var="resourceUrl" value="/meals/${meal.id == null ? \"new\" : \"edit?id=\"}${meal.id}"/>
 
 <html>
 <head>
@@ -16,27 +17,29 @@
 <hr>
 <body>
 <div class="container">
-    <jsp:useBean id="meal" scope="request" type="ru.javawebinar.topjava.model.Meal "/>
     <form style="width: 50%"
-          action="${contextPath}/meals/${action}<c:if test="${action.equals(\"edit\")}">?id=${meal.id}</c:if>"
+          action="${contextPath}${resourceUrl}"
           method="post">
         <h2>${title}</h2>
         <div class="mb-3">
-            <label>Date</label>
-            <input class="form-control"
-                   type="datetime-local"
-                   name="date"
-                   value="${meal.dateTime}">
-            <label>Description</label>
-            <input class="form-control"
-                   type="text"
-                   name="description"
-                   value="${meal.description}">
-            <label>Calories</label>
-            <input class="form-control"
-                   type="number"
-                   name="calories"
-                   value="${meal.calories}">
+            <label>Date
+                <input class="form-control"
+                       type="datetime-local"
+                       name="date"
+                       value="${meal.dateTime}">
+            </label><br>
+            <label>Description
+                <input class="form-control"
+                       type="text"
+                       name="description"
+                       value="${meal.description}">
+            </label><br>
+            <label>Calories
+                <input class="form-control"
+                       type="number"
+                       name="calories"
+                       value="${meal.calories}">
+            </label><br>
         </div>
         <button class="btn btn-primary" type="submit">Save</button>
         <a href="${contextPath}/meals">

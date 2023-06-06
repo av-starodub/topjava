@@ -36,18 +36,9 @@ public class MealServlet extends HttpServlet {
                 doShow(request, response, "/meals.jsp");
                 break;
             }
-            case "new": {
-                log.debug("redirect to meal");
-                request.setAttribute("title", "Add meal");
-                request.setAttribute("action", "new");
-                request.setAttribute("meal", new Meal(null, null, 0));
-                doShow(request, response, "/meal.jsp");
-                break;
-            }
+            case "new":
             case "edit": {
                 log.debug("redirect to meal");
-                request.setAttribute("title", "Edit meal");
-                request.setAttribute("action", "edit");
                 doShow(request, response, "/meal.jsp");
                 break;
             }
@@ -115,9 +106,7 @@ public class MealServlet extends HttpServlet {
         int calories = Integer.parseInt(request.getParameter("calories"));
         Meal meal = new Meal(dateTime, description, calories);
         Integer id = getId(request);
-        if (Objects.nonNull(id)) {
-            meal.setId(id);
-        }
+        meal.setId(id);
         return meal;
     }
 
@@ -130,6 +119,8 @@ public class MealServlet extends HttpServlet {
                 return;
             }
             request.setAttribute("meal", meal);
+        } else {
+            request.setAttribute("meal", new Meal(null, null, 0));
         }
         request.getRequestDispatcher(urlJsp).forward(request, response);
     }

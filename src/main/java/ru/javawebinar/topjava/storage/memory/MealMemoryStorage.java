@@ -31,15 +31,13 @@ public class MealMemoryStorage implements MealStorage {
         Objects.requireNonNull(meal, "Meal must not be null");
         int nextId = id.incrementAndGet();
         meal.setId(nextId);
-        storage.put(nextId, meal);
-        return storage.get(nextId);
+        return storage.putIfAbsent(nextId, meal);
     }
 
     @Override
     public Meal update(Meal meal) {
         int id = meal.getId();
-        storage.put(id, meal);
-        return storage.get(id);
+        return storage.replace(id, meal);
     }
 
     @Override
