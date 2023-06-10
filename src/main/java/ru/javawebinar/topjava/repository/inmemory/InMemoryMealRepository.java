@@ -1,17 +1,24 @@
 package ru.javawebinar.topjava.repository.inmemory;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.repository.MealRepository;
+import ru.javawebinar.topjava.util.DateTimeUtil;
 import ru.javawebinar.topjava.util.MealsUtil;
 import ru.javawebinar.topjava.web.SecurityUtil;
 
-import java.util.Collection;
-import java.util.Map;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class InMemoryMealRepository implements MealRepository {
-    private final Map<Integer, Meal> repository = new ConcurrentHashMap<>();
+    private static final Logger log = LoggerFactory.getLogger(InMemoryUserRepository.class);
+    private final Map<Integer, ConcurrentHashMap<Integer, Meal>> repository = new ConcurrentHashMap<>();
+    private final Map<Integer, Integer> permissions = new ConcurrentHashMap<>();
     private final AtomicInteger counter = new AtomicInteger(0);
 
     {
@@ -20,28 +27,86 @@ public class InMemoryMealRepository implements MealRepository {
 
     @Override
     public Meal save(Meal meal, int userId) {
+        log.info("{} save: {}, userId={}", LocalDateTime.now(), meal, userId);
+        if (!meal.isNew() && !verifyAccess(meal.getId(), userId)) {
+            return null;
+        }
         if (meal.isNew()) {
             meal.setId(counter.incrementAndGet());
-            repository.put(meal.getId(), meal);
-            return meal;
+            permissions.put(meal.getId(), userId);
         }
-        // handle case: update, but not present in storage
-        return repository.computeIfPresent(meal.getId(), (id, oldMeal) -> meal);
+        return repository.computeIfAbsent(userId, (id) -> new ConcurrentHashMap<>()).put(meal.getId(), meal);
     }
 
     @Override
     public boolean delete(int userId, int id) {
-        return repository.remove(id) != null;
+        log.info("{} delete: {}, userId={}", LocalDateTime.now(), userId, id);
+        if (!verifyAccess(id, userId)) {
+            return false;
+        }
+        Map<Integer, Meal> userMeals = getMeals(userId);
+        if (notExist(userMeals) || Objects.isNull(userMeals.remove(id))) {
+            return false;
+        }
+        if (userMeals.isEmpty()) {
+            clearUserData(userId);
+        }
+        return true;
     }
 
     @Override
     public Meal get(int userId, int id) {
-        return repository.get(id);
+        log.info("{} get: userId={}, id={}", LocalDateTime.now(), userId, id);
+        return verifyAccess(id, userId) ? getMeals(userId).get(id) : null;
     }
 
     @Override
-    public Collection<Meal> getAll(int userId) {
-        return repository.values();
+    public List<Meal> getAll(int userId) {
+        log.info("{} getAll: userId={}", LocalDateTime.now(), userId);
+        Map<Integer, Meal> userMeals = getMeals(userId);
+        if (notExist(userMeals)) {
+            return Collections.emptyList();
+        }
+        return sortByTime(sortByDate(userMeals));
+    }
+
+
+    private Map<Integer, Meal> getMeals(int userId) {
+        return repository.get(userId);
+    }
+
+    private boolean verifyAccess(int id, int userId) {
+        return permissions.get(id) == userId;
+    }
+
+    private boolean notExist(Map<Integer, Meal> meals) {
+        return Objects.isNull(meals);
+    }
+
+    private void clearUserData(int userId) {
+        repository.remove(userId);
+        permissions.forEach((id, value) -> {
+            if (value == userId) {
+                permissions.remove(id);
+            }
+        });
+    }
+
+    private Map<LocalDate, List<Meal>> sortByDate(Map<Integer, Meal> userMeals) {
+        SortedMap<LocalDate, List<Meal>> mealsByDate = new ConcurrentSkipListMap<>(DateTimeUtil::compareByDate);
+        userMeals.values()
+                .forEach(meal -> mealsByDate.computeIfAbsent(meal.getDate(), (localDate) -> new ArrayList<>()).add(meal)
+                );
+        return mealsByDate;
+    }
+
+    private List<Meal> sortByTime(Map<LocalDate, List<Meal>> userMealsByDate) {
+        List<Meal> mealsByTime = new ArrayList<>();
+        userMealsByDate.values()
+                .forEach(list -> {
+                    list.sort(Comparator.comparing(Meal::getTime, DateTimeUtil::compareByTime));
+                    mealsByTime.addAll(list);
+                });
+        return mealsByTime;
     }
 }
-
