@@ -70,7 +70,6 @@ public class InMemoryMealRepository implements MealRepository {
         return sortByTime(sortByDate(userMeals));
     }
 
-
     private Map<Integer, Meal> getMeals(int userId) {
         return repository.get(userId);
     }
