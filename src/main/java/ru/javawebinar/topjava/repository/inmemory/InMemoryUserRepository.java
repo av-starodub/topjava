@@ -6,6 +6,7 @@ import org.springframework.stereotype.Repository;
 import ru.javawebinar.topjava.model.User;
 import ru.javawebinar.topjava.repository.UserRepository;
 
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -20,21 +21,26 @@ public class InMemoryUserRepository implements UserRepository {
 
     @Override
     public boolean delete(int id) {
-        log.info("delete {}", id);
-        User removedUser = users.remove(id);
-        return Objects.nonNull(emails.remove(removedUser.getEmail()));
+        log.info("{} delete {}", LocalDateTime.now(), id);
+        User removed = users.remove(id);
+        if (Objects.nonNull(removed)) {
+            emails.remove(removed.getEmail());
+            return true;
+        }
+        return false;
     }
 
     @Override
     public User save(User user) {
-        log.info("save {}", user);
+        log.info("{} save {}", LocalDateTime.now(), user);
+        String email = user.getEmail();
+        if (isEmailRegistered(email)) {
+            return null;
+        }
         if (user.isNew()) {
-            String email = user.getEmail();
-            checkEmail(email);
             user.setId(counter.incrementAndGet());
-            users.put(user.getId(), user);
             emails.put(email, user.getId());
-            return user;
+            return users.put(user.getId(), user);
         }
         // handle case: update, but not present in storage
         return replace(user);
@@ -42,13 +48,13 @@ public class InMemoryUserRepository implements UserRepository {
 
     @Override
     public User get(int id) {
-        log.info("get {}", id);
+        log.info("{} get {}", LocalDateTime.now(), id);
         return users.get(id);
     }
 
     @Override
     public List<User> getAll() {
-        log.info("getAll");
+        log.info("{} getAll", LocalDateTime.now());
         return users.values()
                 .stream()
                 .sorted(Comparator.comparing(User::getName, String.CASE_INSENSITIVE_ORDER))
@@ -57,27 +63,25 @@ public class InMemoryUserRepository implements UserRepository {
 
     @Override
     public User getByEmail(String email) {
-        log.info("getByEmail {}", email);
+        log.info("{} getByEmail {}", LocalDateTime.now(), email);
         Integer id = emails.get(email);
-        if (Objects.nonNull(id)) {
-            return users.get(id);
-        }
-        return null;
+        return users.get(id);
     }
 
-    private void checkEmail(String email) {
-        log.info("checkEmail {}", email);
-        if (Objects.nonNull((emails.get(email)))) {
-            throw new IllegalArgumentException(email + " already registered");
-        }
+    private boolean isEmailRegistered(String email) {
+        return Objects.nonNull(emails.get(email));
     }
 
     private User replace(User user) {
         return users.computeIfPresent(user.getId(), (id, oldUser) -> {
-            if (Objects.isNull(emails.putIfAbsent(user.getEmail(), id))) {
+            if (updateEmail(user)) {
                 emails.remove(oldUser.getEmail());
             }
             return user;
         });
+    }
+
+    private boolean updateEmail(User user) {
+        return Objects.isNull(emails.putIfAbsent(user.getEmail(), user.getId()));
     }
 }
