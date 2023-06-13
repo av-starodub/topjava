@@ -65,7 +65,7 @@ public class InMemoryUserRepository implements UserRepository {
     public User getByEmail(String email) {
         log.info("{} getByEmail {}", LocalDateTime.now(), email);
         Integer id = emails.get(email);
-        return users.get(id);
+        return Objects.nonNull(id) ? users.get(id) : null;
     }
 
     private boolean isEmailRegistered(String email) {
