@@ -5,6 +5,7 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 import ru.javawebinar.topjava.model.Role;
 import ru.javawebinar.topjava.model.User;
 import ru.javawebinar.topjava.repository.inmemory.InMemoryUserRepository;
+import ru.javawebinar.topjava.util.MealsUtil;
 import ru.javawebinar.topjava.util.exception.NotFoundException;
 import ru.javawebinar.topjava.web.meal.MealRestController;
 import ru.javawebinar.topjava.web.user.AdminRestController;
@@ -25,6 +26,7 @@ public class SpringMain {
 
             // Check that the application layers for the "Meal" functionality are correctly added to the Spring context
             MealRestController mealRestController = appCtx.getBean(MealRestController.class);
+            MealsUtil.meals.forEach(mealRestController::create);
             mealRestController.get(1);
 
             // Test email update

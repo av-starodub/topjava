@@ -12,6 +12,11 @@ public class DateTimeUtil {
         return lt.compareTo(startTime) >= 0 && lt.compareTo(endTime) < 0;
     }
 
+    public static boolean isBetweenTwoDate(LocalDate lt, LocalDate startTime, LocalDate endTime) {
+        return lt.compareTo(startTime) >= 0 && lt.compareTo(endTime) <= 0;
+    }
+
+
     public static int compareByTime(LocalTime time1, LocalTime time2) {
         return time1.compareTo(time2);
     }

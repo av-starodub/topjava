@@ -3,6 +3,8 @@ package ru.javawebinar.topjava.web.meal;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.to.MealTo;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 
 public interface MealController {
@@ -15,4 +17,6 @@ public interface MealController {
     void delete(int id);
 
     List<MealTo> getAll();
+
+    List<MealTo> filter(LocalDate startDate, LocalDate endDate, LocalTime startTime, LocalTime endTime);
 }

@@ -11,7 +11,10 @@ import ru.javawebinar.topjava.util.MealsUtil;
 import ru.javawebinar.topjava.util.ValidationUtil;
 import ru.javawebinar.topjava.web.SecurityUtil;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
+import java.util.Map;
 
 @Controller
 public class MealRestController implements MealController {
@@ -59,5 +62,14 @@ public class MealRestController implements MealController {
         int userId = SecurityUtil.authUserId();
         log.info("getAll userId={}", userId);
         return MealsUtil.getTos(service.getAll(userId), SecurityUtil.authUserCaloriesPerDay());
+    }
+
+    @Override
+    public List<MealTo> filter(LocalDate startDate, LocalDate endDate, LocalTime startTime, LocalTime endTime) {
+        int userId = SecurityUtil.authUserId();
+        log.info("filter userId={}", userId);
+        return MealsUtil.getFilteredTos(
+                service.filter(userId, startDate, endDate), SecurityUtil.authUserCaloriesPerDay(), startTime, endTime
+        );
     }
 }

@@ -14,6 +14,7 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 @Repository
 public class InMemoryMealRepository implements MealRepository {
@@ -72,6 +73,15 @@ public class InMemoryMealRepository implements MealRepository {
             return Collections.emptyList();
         }
         return sortByTime(sortByDate(userMeals));
+    }
+
+    @Override
+    public List<Meal> getAllInRange(LocalDate start, LocalDate end, int userId) {
+        log.info("{} getInRange: userId={}", LocalDateTime.now(), userId);
+        return getAll(userId)
+                .stream()
+                .filter(meal -> DateTimeUtil.isBetweenTwoDate(meal.getDate(), start, end))
+                .collect(Collectors.toList());
     }
 
     private Map<Integer, Meal> getMeals(int userId) {

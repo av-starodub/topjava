@@ -13,7 +13,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Objects;
 
@@ -77,14 +79,39 @@ public class MealServlet extends HttpServlet {
             case "all":
             default:
                 log.info("getAll");
-                request.setAttribute("meals", controller.getAll());
+                LocalDate startDate = getDate(request.getParameter("startDate"), "start");
+                LocalDate endDate = getDate(request.getParameter("endDate"), "end");
+                LocalTime startTime = getTime(request.getParameter("startTime"), "start");
+                LocalTime endTime = getTime(request.getParameter("endTime"), "end");
+                request.setAttribute("meals", controller.filter(startDate, endDate, startTime, endTime));
                 request.getRequestDispatcher("/meals.jsp").forward(request, response);
-                break;
         }
     }
 
     private int getId(HttpServletRequest request) {
         String paramId = Objects.requireNonNull(request.getParameter("id"));
         return Integer.parseInt(paramId);
+    }
+
+    private LocalDate getDate(String localDate, String datePrefix) {
+        boolean isEmpty = Objects.isNull(localDate) || localDate.isEmpty();
+        if ("start".equals(datePrefix) && isEmpty) {
+            return LocalDate.MIN;
+        }
+        if ("end".equals(datePrefix) && isEmpty) {
+            return LocalDate.MAX;
+        }
+        return LocalDate.parse(localDate);
+    }
+
+    private LocalTime getTime(String localTime, String timePrefix) {
+        boolean isEmpty = Objects.isNull(localTime) || localTime.isEmpty();
+        if ("start".equals(timePrefix) && isEmpty) {
+            return LocalTime.MIN;
+        }
+        if ("end".equals(timePrefix) && isEmpty) {
+            return LocalTime.MAX;
+        }
+        return LocalTime.parse(localTime);
     }
 }
