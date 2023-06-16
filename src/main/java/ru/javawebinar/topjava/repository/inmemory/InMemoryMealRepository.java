@@ -2,12 +2,11 @@ package ru.javawebinar.topjava.repository.inmemory;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.repository.MealRepository;
 import ru.javawebinar.topjava.util.DateTimeUtil;
-import ru.javawebinar.topjava.util.MealsUtil;
-import ru.javawebinar.topjava.web.SecurityUtil;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -19,12 +18,15 @@ import java.util.concurrent.atomic.AtomicInteger;
 @Repository
 public class InMemoryMealRepository implements MealRepository {
     private static final Logger log = LoggerFactory.getLogger(InMemoryUserRepository.class);
-    private final Map<Integer, ConcurrentHashMap<Integer, Meal>> repository = new ConcurrentHashMap<>();
-    private final Map<Integer, Integer> permissions = new ConcurrentHashMap<>();
-    private final AtomicInteger counter = new AtomicInteger(0);
+    private final Map<Integer, ConcurrentHashMap<Integer, Meal>> repository;
+    private final Map<Integer, Integer> permissions;
+    private final AtomicInteger counter;
 
-    {
-        MealsUtil.meals.forEach(meal -> save(meal, SecurityUtil.authUserId()));
+    @Autowired
+    public InMemoryMealRepository() {
+        this.repository = new ConcurrentHashMap<>();
+        this.permissions = new ConcurrentHashMap<>();
+        this.counter = new AtomicInteger(0);
     }
 
     @Override
