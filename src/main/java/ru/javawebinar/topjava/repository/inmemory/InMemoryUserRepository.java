@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 public class InMemoryUserRepository implements UserRepository {
     private static final Logger log = LoggerFactory.getLogger(InMemoryUserRepository.class);
     private final Map<Integer, User> users = new ConcurrentHashMap<>();
-    private final Map<String, Integer> emails = new ConcurrentHashMap<>();
+    private final Map<String, Integer> emailsToUserIdRelationTable = new ConcurrentHashMap<>();
     private final AtomicInteger counter = new AtomicInteger(0);
 
     @Override
@@ -24,7 +24,7 @@ public class InMemoryUserRepository implements UserRepository {
         log.info("{} delete {}", LocalDateTime.now(), id);
         User removed = users.remove(id);
         if (Objects.nonNull(removed)) {
-            emails.remove(removed.getEmail());
+            emailsToUserIdRelationTable.remove(removed.getEmail());
             return true;
         }
         return false;
@@ -39,7 +39,7 @@ public class InMemoryUserRepository implements UserRepository {
         }
         if (user.isNew()) {
             user.setId(counter.incrementAndGet());
-            emails.put(email, user.getId());
+            emailsToUserIdRelationTable.put(email, user.getId());
             return users.put(user.getId(), user);
         }
         // handle case: update, but not present in storage
@@ -64,24 +64,24 @@ public class InMemoryUserRepository implements UserRepository {
     @Override
     public User getByEmail(String email) {
         log.info("{} getByEmail {}", LocalDateTime.now(), email);
-        Integer id = emails.get(email);
+        Integer id = emailsToUserIdRelationTable.get(email);
         return Objects.nonNull(id) ? users.get(id) : null;
     }
 
     private boolean isEmailRegistered(String email) {
-        return Objects.nonNull(emails.get(email));
+        return Objects.nonNull(emailsToUserIdRelationTable.get(email));
     }
 
     private User replace(User user) {
         return users.computeIfPresent(user.getId(), (id, oldUser) -> {
             if (updateEmail(user)) {
-                emails.remove(oldUser.getEmail());
+                emailsToUserIdRelationTable.remove(oldUser.getEmail());
             }
             return user;
         });
     }
 
     private boolean updateEmail(User user) {
-        return Objects.isNull(emails.putIfAbsent(user.getEmail(), user.getId()));
+        return Objects.isNull(emailsToUserIdRelationTable.putIfAbsent(user.getEmail(), user.getId()));
     }
 }
