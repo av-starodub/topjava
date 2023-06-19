@@ -49,7 +49,7 @@ public class MealServlet extends HttpServlet {
                 Integer.parseInt(request.getParameter("calories")));
 
         log.info(meal.isNew() ? "Create {}" : "Update {}", meal);
-        if (Objects.isNull(meal.getId())) {
+        if (meal.isNew()) {
             controller.create(meal);
         } else {
             controller.update(meal, meal.getId());
@@ -79,10 +79,10 @@ public class MealServlet extends HttpServlet {
             case "all":
             default:
                 log.info("getAll");
-                LocalDate startDate = getDate(request.getParameter("startDate"), "start");
-                LocalDate endDate = getDate(request.getParameter("endDate"), "end");
-                LocalTime startTime = getTime(request.getParameter("startTime"), "start");
-                LocalTime endTime = getTime(request.getParameter("endTime"), "end");
+                LocalDate startDate = parseDate(request.getParameter("startDate"));
+                LocalDate endDate = parseDate(request.getParameter("endDate"));
+                LocalTime startTime = parseTime(request.getParameter("startTime"));
+                LocalTime endTime = parseTime(request.getParameter("endTime"));
                 request.setAttribute("meals", controller.filter(startDate, endDate, startTime, endTime));
                 request.getRequestDispatcher("/meals.jsp").forward(request, response);
         }
@@ -93,25 +93,15 @@ public class MealServlet extends HttpServlet {
         return Integer.parseInt(paramId);
     }
 
-    private LocalDate getDate(String localDate, String datePrefix) {
-        boolean isEmpty = Objects.isNull(localDate) || localDate.isEmpty();
-        if ("start".equals(datePrefix) && isEmpty) {
-            return LocalDate.MIN;
-        }
-        if ("end".equals(datePrefix) && isEmpty) {
-            return LocalDate.MAX;
-        }
-        return LocalDate.parse(localDate);
+    private LocalDate parseDate(String localDate) {
+        return isEmpty(localDate) ? null : LocalDate.parse(localDate);
     }
 
-    private LocalTime getTime(String localTime, String timePrefix) {
-        boolean isEmpty = Objects.isNull(localTime) || localTime.isEmpty();
-        if ("start".equals(timePrefix) && isEmpty) {
-            return LocalTime.MIN;
-        }
-        if ("end".equals(timePrefix) && isEmpty) {
-            return LocalTime.MAX;
-        }
-        return LocalTime.parse(localTime);
+    private LocalTime parseTime(String localTime) {
+        return isEmpty(localTime) ? null : LocalTime.parse(localTime);
+    }
+
+    private boolean isEmpty(String value) {
+        return Objects.isNull(value) || value.isEmpty();
     }
 }
