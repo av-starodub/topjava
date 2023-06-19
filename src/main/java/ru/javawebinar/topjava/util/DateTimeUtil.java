@@ -16,16 +16,6 @@ public class DateTimeUtil {
         return lt.compareTo(startTime) >= 0 && lt.compareTo(endTime) <= 0;
     }
 
-
-    public static int compareByTime(LocalTime time1, LocalTime time2) {
-        return time1.compareTo(time2);
-    }
-
-    public static int compareByDate(LocalDate date1, LocalDate date2) {
-        return date2.compareTo(date1);
-    }
-
-
     public static String toString(LocalDateTime ldt) {
         return ldt == null ? "" : ldt.format(DATE_TIME_FORMATTER);
     }
