@@ -14,10 +14,9 @@ import ru.javawebinar.topjava.web.SecurityUtil;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
-import java.util.Map;
 
 @Controller
-public class MealRestController implements MealController {
+public class MealRestController {
     private final Logger log = LoggerFactory.getLogger(getClass());
 
     private final MealService service;
@@ -27,7 +26,6 @@ public class MealRestController implements MealController {
         this.service = service;
     }
 
-    @Override
     public Meal create(Meal meal) {
         int userId = SecurityUtil.authUserId();
         log.info("create meal {} userId={}", meal, userId);
@@ -35,7 +33,6 @@ public class MealRestController implements MealController {
         return service.create(meal, userId);
     }
 
-    @Override
     public void update(Meal meal, int id) {
         int userId = SecurityUtil.authUserId();
         log.info("update meal {}, userId={}", meal, userId);
@@ -43,28 +40,24 @@ public class MealRestController implements MealController {
         service.update(meal, userId);
     }
 
-    @Override
     public Meal get(int id) {
         int userId = SecurityUtil.authUserId();
         log.info("get meal id={}, userId={}", id, userId);
         return service.get(userId, id);
     }
 
-    @Override
     public void delete(int id) {
         int userId = SecurityUtil.authUserId();
         log.info("delete meal id={}, userId={}", id, userId);
         service.delete(userId, id);
     }
 
-    @Override
     public List<MealTo> getAll() {
         int userId = SecurityUtil.authUserId();
         log.info("getAll userId={}", userId);
         return MealsUtil.getTos(service.getAll(userId), SecurityUtil.authUserCaloriesPerDay());
     }
 
-    @Override
     public List<MealTo> filter(LocalDate startDate, LocalDate endDate, LocalTime startTime, LocalTime endTime) {
         int userId = SecurityUtil.authUserId();
         log.info("filter userId={}", userId);
