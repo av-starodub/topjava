@@ -63,31 +63,11 @@ public class MealRestController {
     public List<MealTo> filter(LocalDate startDate, LocalDate endDate, LocalTime startTime, LocalTime endTime) {
         int userId = SecurityUtil.authUserId();
         log.info("filter userId={}", userId);
-        LocalDate startD = getDate(startDate, "start");
-        LocalDate endD = getDate(endDate, "end");
-        LocalTime startT = getTime(startTime, "start");
-        LocalTime endT = getTime(endTime, "end");
+        LocalDate startD = Objects.nonNull(startDate) ? startDate : LocalDate.MIN;
+        LocalDate endD = Objects.nonNull(endDate) ? endDate : LocalDate.MAX;
+        LocalTime startT = Objects.nonNull(startTime) ? startTime : LocalTime.MIN;
+        LocalTime endT = Objects.nonNull(endTime) ? endTime : LocalTime.MAX;
         Collection<Meal> meals = service.filter(userId, startD, endD);
         return MealsUtil.getFilteredTos(meals, SecurityUtil.authUserCaloriesPerDay(), startT, endT);
-    }
-
-    private LocalDate getDate(LocalDate localDate, String datePrefix) {
-        if (Objects.nonNull(localDate)) {
-            return localDate;
-        }
-        if ("start".equals(datePrefix)) {
-            return LocalDate.MIN;
-        }
-        return LocalDate.MAX;
-    }
-
-    private LocalTime getTime(LocalTime localTime, String timePrefix) {
-        if (Objects.nonNull(localTime)) {
-            return localTime;
-        }
-        if ("start".equals(timePrefix)) {
-            return LocalTime.MIN;
-        }
-        return LocalTime.MAX;
     }
 }
