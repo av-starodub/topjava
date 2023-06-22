@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 @Repository
 public class InMemoryMealRepository implements MealRepository {
     private static final Logger log = LoggerFactory.getLogger(InMemoryMealRepository.class);
-    private final Map<Integer, ConcurrentHashMap<Integer, Meal>> repository;
+    private final Map<Integer, Map<Integer, Meal>> repository;
     private final AtomicInteger counter;
 
     @Autowired
@@ -32,8 +32,11 @@ public class InMemoryMealRepository implements MealRepository {
         log.info("save: {}, userId={}", meal, userId);
         if (meal.isNew()) {
             meal.setId(counter.incrementAndGet());
+            return repository.computeIfAbsent(userId, id -> new ConcurrentHashMap<>()).put(meal.getId(), meal);
         }
-        return repository.computeIfAbsent(userId, (id) -> new ConcurrentHashMap<>()).put(meal.getId(), meal);
+        // handle case: update
+        Map<Integer, Meal> userMeals = getMeals(userId);
+        return Objects.nonNull(userMeals) ? userMeals.computeIfPresent(meal.getId(), (id, oldMeal) -> meal) : null;
     }
 
     @Override
