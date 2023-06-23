@@ -12,12 +12,12 @@ import static ru.javawebinar.topjava.model.AbstractBaseEntity.START_SEQ;
 public class MealTestData {
     public static final int NOT_FOUND = 10;
 
-    public static final Meal U_BREAKFAST = new Meal(START_SEQ + 2, LocalDateTime.of(2023, Month.JUNE, 22, 8, 0), "завтрак", 1000);
-    public static final Meal U_LUNCH = new Meal(START_SEQ + 3, LocalDateTime.of(2023, Month.JUNE, 22, 8, 0), "завтрак", 1000);
-    public static final Meal U_DINNER = new Meal(START_SEQ + 4, LocalDateTime.of(2023, Month.JUNE, 22, 8, 0), "завтрак", 1000);
-    public static final Meal A_BREAKFAST = new Meal(START_SEQ + 5, LocalDateTime.of(2023, Month.JUNE, 22, 8, 0), "завтрак", 1000);
-    public static final Meal A_LUNCH = new Meal(START_SEQ + 6, LocalDateTime.of(2023, Month.JUNE, 22, 8, 0), "завтрак", 1000);
-    public static final Meal A_DINNER = new Meal(START_SEQ + 7, LocalDateTime.of(2023, Month.JUNE, 22, 8, 0), "завтрак", 1000);
+    public static final Meal U_BREAKFAST = new Meal(START_SEQ + 3, LocalDateTime.of(2023, Month.JUNE, 22, 8, 0), "завтрак", 1000);
+    public static final Meal U_LUNCH = new Meal(START_SEQ + 4, LocalDateTime.of(2023, Month.JUNE, 22, 13, 0), "обед", 1000);
+    public static final Meal U_DINNER = new Meal(START_SEQ + 5, LocalDateTime.of(2023, Month.JUNE, 22, 19, 0), "ужин", 500);
+    public static final Meal A_BREAKFAST = new Meal(START_SEQ + 6, LocalDateTime.of(2023, Month.JUNE, 22, 10, 0), "завтрак", 500);
+    public static final Meal A_LUNCH = new Meal(START_SEQ + 7, LocalDateTime.of(2023, Month.JUNE, 22, 14, 0), "обед", 1000);
+    public static final Meal A_DINNER = new Meal(START_SEQ + 8, LocalDateTime.of(2023, Month.JUNE, 22, 20, 0), "ужин", 500);
 
     public static Meal getNew() {
         return new Meal(null, LocalDateTime.of(2023, Month.JUNE, 23, 8, 0), "завтрак", 1000);
