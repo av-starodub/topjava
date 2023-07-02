@@ -42,8 +42,8 @@ public class MealServiceTest {
     public static final TestExecutionTimeLogger EXECUTION_TIME_LOGGER = new TestExecutionTimeLogger();
 
     @AfterClass
-    public static void getExecutionTime() {
-        log.info(EXECUTION_TIME_LOGGER.getTimeSummary());
+    public static void showExecutionTimeOfEachTest() {
+        log.info(EXECUTION_TIME_LOGGER.createStatisticsRepresentation());
     }
 
     @Test

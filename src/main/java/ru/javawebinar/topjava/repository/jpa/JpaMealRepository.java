@@ -27,10 +27,7 @@ public class JpaMealRepository implements MealRepository {
             em.persist(meal);
             return meal;
         }
-        if (Objects.nonNull(get(meal.id(), userId))) {
-            return em.merge(meal);
-        }
-        return null;
+        return Objects.nonNull(get(meal.id(), userId)) ? em.merge(meal) : null;
     }
 
     @Override
@@ -45,10 +42,7 @@ public class JpaMealRepository implements MealRepository {
     @Override
     public Meal get(int id, int userId) {
         Meal meal = em.find(Meal.class, id);
-        if (Objects.nonNull(meal) && meal.isOwnedByUser(userId)) {
-            return meal;
-        }
-        return null;
+        return Objects.nonNull(meal) && meal.isOwnedByUser(userId) ? meal : null;
     }
 
     @Override
