@@ -1,7 +1,6 @@
 package ru.javawebinar.topjava.service;
 
 import org.junit.AfterClass;
-import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -33,17 +32,17 @@ import static ru.javawebinar.topjava.UserTestData.USER_ID;
 @Sql(scripts = "classpath:db/populateDB.sql", config = @SqlConfig(encoding = "UTF-8"))
 public class MealServiceTest {
     private static final Logger log = LoggerFactory.getLogger(MealServiceTest.class);
+    private static final TestExecutionTimeLogger TIME_LOGGER = new TestExecutionTimeLogger();
 
     @Autowired
     private MealService service;
 
     @Rule
-    @ClassRule
-    public static final TestExecutionTimeLogger EXECUTION_TIME_LOGGER = new TestExecutionTimeLogger();
+    public final TestExecutionTimeLogger TL = TIME_LOGGER;
 
     @AfterClass
     public static void showExecutionTimeOfEachTest() {
-        log.info(EXECUTION_TIME_LOGGER.createStatisticsRepresentation());
+        log.info(TIME_LOGGER.createStatisticsRepresentation());
     }
 
     @Test
